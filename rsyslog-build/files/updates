@@ -1,0 +1,4 @@
+Name: rsyslog-upstream
+Method: http://ppa.launchpad.net/adiscon/v8-stable/ubuntu
+Suite: trusty
+Components: main

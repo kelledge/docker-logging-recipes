@@ -1,0 +1,9 @@
+SHELL=/bin/bash
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+* * * * *	root echo "`date`: I run every minute"		>>/var/log/crontask-1.log
+*/5 * * * *	root echo "`date`: I run every five minutes"	>>/var/log/crontask-2.log
+*/15 * * * *	root echo "`date`: I run every fifteen minutes"	>>/var/log/crontask-1.log
+0 * * * *	root echo "`date`: I run every hours"		>>/var/log/crontask-2.log
+0 */3 * * *	root echo "`date`: I run every three hours"	>>/var/log/crontask-1.log
+0 0 * * *	root echo "`date`: I run every day"		>>/var/log/crontask-2.log

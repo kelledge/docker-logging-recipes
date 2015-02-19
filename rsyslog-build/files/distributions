@@ -1,0 +1,10 @@
+Origin: Kevin Elledge
+Label: Kevin Elledge
+Suite: stable
+Codename: rsyslog
+Architectures: i386 amd64
+Components: main
+Description: RSyslog Mirror
+DebIndices: Packages Release . .gz .bz2
+DscIndices: Sources Release . .gz .bz2
+Update: rsyslog-upstream

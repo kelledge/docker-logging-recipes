@@ -1,0 +1,128 @@
+#!/usr/bin/env python
+import argparse
+import logging
+import random
+import sys
+import os
+import time
+
+from logging.handlers import SysLogHandler
+from logging import FileHandler, StreamHandler
+
+messages = [
+  "A mechanical Jedi Master rooms with a car saleswoman in a subway station.",
+  "A race car driver and an anachronistic banjo player go on a quest to destroy an evil ring in a stadium.",
+  "A gorgeous cameraman, a fascinating witch, and a plundering sniper search for their missing girlfriend at an alligator farm.",
+  "A fast-talking docent, an arrogant junkyard owner, and a ne'er-do-well Cub Scout hide from their oppressors at a luxury resort.",
+  "A consultant and a trustworthy hunter join a political cause.",
+  "The gambler cousin of a nanny goes on a shopping spree."
+]
+
+facility_map = {
+  "kern": 0,
+  "user": 1,
+  "mail": 2,
+  "daemon": 3,
+  "auth": 4,
+  "syslog": 5,
+  "lpr": 6,
+  "news": 7,
+  "uucp": 8,
+  "authpriv": 10,
+  "ftp": 11,
+  "cron": 15,
+  "local0": 16,
+  "local1": 17,
+  "local2": 18,
+  "local3": 19,
+  "local4": 20,
+  "local5": 21,
+  "local6": 22,
+  "local7": 23
+}
+
+priority_map = {
+  "emerg": logging.CRITICAL,
+  "emergancy": logging.CRITICAL,
+  "panic": logging.CRITICAL,
+  "alert": logging.ERROR,
+  "err": logging.ERROR,
+  "error": logging.ERROR,
+  "crit": logging.ERROR,
+  "critical": logging.ERROR,
+  "warn": logging.WARNING,
+  "warning": logging.WARNING,
+  "notice": logging.INFO,
+  "info": logging.INFO,
+  "debug": logging.DEBUG
+}
+
+def loop(logger):
+    while True:
+        msg_index = random.randint(0,5)
+        wait = random.betavariate(2,5)
+        logger.log(logging.INFO, messages[msg_index])
+        time.sleep(wait)
+
+def syslog(args):
+    priority = priority_map[args.priority]
+    facility = facility_map[args.facility]
+    tag = args.tag
+
+    f = logging.Formatter(tag + ': %(message)s')
+    h = SysLogHandler(address="/dev/log", facility=facility)
+
+    h.setLevel(logging.INFO)
+    h.setFormatter(f)
+
+    return h
+
+def logfile(args):
+    abspath = os.path.abspath(args.file)
+
+    f = logging.Formatter('%(asctime)s %(message)s')
+    h = FileHandler(abspath)
+
+    h.setLevel(logging.INFO)
+    h.setFormatter(f)
+
+    return h
+
+def stdout(args):
+    f = logging.Formatter('%(message)s')
+    h = StreamHandler(sys.stdout)
+
+    h.setLevel(logging.INFO)
+    h.setFormatter(f)
+
+    return h
+
+def main():
+    logger = logging.getLogger()
+    parser = argparse.ArgumentParser(description='Log generator.')
+    subparsers = parser.add_subparsers()
+
+    syslog_parser = subparsers.add_parser('syslog')
+    syslog_parser.add_argument('--tag', type=str, required=True)
+    syslog_parser.add_argument('--facility', type=str, default="user")
+    syslog_parser.add_argument('--priority', type=str, default="notice")
+    syslog_parser.set_defaults(func=syslog)
+
+    logfile_parser = subparsers.add_parser('logfile')
+    logfile_parser.add_argument('--file', type=str, default="./log")
+    logfile_parser.set_defaults(func=logfile)
+
+    stdout_parser = subparsers.add_parser('stdout')
+    stdout_parser.set_defaults(func=stdout)
+
+    args = parser.parse_args()
+    handler = args.func(args)
+
+    l = logging.getLogger()
+    l.setLevel(logging.INFO)
+    l.addHandler(handler)
+
+    loop(l)
+
+if __name__ == '__main__':
+    main()

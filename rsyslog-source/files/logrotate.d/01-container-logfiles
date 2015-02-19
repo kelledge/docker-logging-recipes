@@ -1,0 +1,11 @@
+/logfile-only-program.log
+/app/log/production.log
+/var/log/important.log {
+  daily
+  missingok
+  rotate 7
+  compress
+  delaycompress
+  notifempty
+  copytruncate
+}

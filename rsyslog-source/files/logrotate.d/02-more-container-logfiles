@@ -1,0 +1,10 @@
+/var/log/crontask-1.log 
+/var/log/crontask-2.log {
+  weekly
+  missingok
+  rotate 4
+  compress
+  delaycompress
+  notifempty
+  copytruncate
+}
